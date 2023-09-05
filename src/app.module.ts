@@ -7,7 +7,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AppconfigurationModule } from './configuration/configuration.module';
 import { AppconfigurationService } from './configuration/configuration.service';
-import { logger } from './helper/app.middleware';
+import { logger } from './middleware/app.middleware';
 import { UserController } from './User/User.controller';
 import { UserModule } from './User/User.module';
 import { RestaurantModule } from './restaurant/restaurant.module';

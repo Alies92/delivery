@@ -7,11 +7,7 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   
-  @Get('/ab*b')
-  @HttpCode(200) //Status code
-  getHello(): string {
-    return this.appService.getHello();
-  }
+
   
   @Get('async')
   async  findall() {
@@ -36,20 +32,7 @@ export class AppController {
   }
 
 
-  //redirect
-  // @Get()
-  // @Redirect('https://tarafdari.com',301)
 
-  @Get()
-  find(){
-    return this.appService.findAll();
-  }
 
-  @Post()
-  create(@Body('name') userName:string,@Body('age') userAge:number){
-    
-    this.appService.insertuser(userName,userAge);
-    
-  }
-
+ 
 }

@@ -5,6 +5,7 @@ import { AuthService } from "src/auth/auth.service";
 import { Role } from "../User/User.schema"
 
 import { User, UserDocument } from "./User.schema";
+import { log } from "console";
 const bcrypt = require("bcrypt");
 
 
@@ -35,7 +36,6 @@ export class UserService {
         if (existingUser) {
             throw new Error(`User  already exists.`);
         }
-        // console.log(User.password);
 
         const hashedPassword = await bcrypt.hash(User.password, 10);
         const newUser = new this.UserModel({
@@ -75,14 +75,25 @@ export class UserService {
 
     }
 
+    async changepassword(id, body) {
+        const user = await this.UserModel.findById(id).exec();
+        const password = await bcrypt.hash(body.password, 10);        
+       user.password = password;
+       await user.save();
+        user.password = undefined;
+        user.roles = undefined;
+        return user;
+       
+    }
+
     async readAll(): Promise<User[]> {
         return await this.UserModel.find().select('username').select('email').select('-password').exec();
     }
 
     async readById(id): Promise<User> {
-        
+
         const user = await this.UserModel.findById(id).exec();
-        
+
         user.password = undefined;
         user.roles = undefined;
         return user;

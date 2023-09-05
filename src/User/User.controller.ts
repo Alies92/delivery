@@ -1,11 +1,12 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Req, Request, Response, Res, UseGuards, UsePipes, ValidationPipe, UseInterceptors, Inject, forwardRef } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Req, Request, Response, Res, UseGuards, UsePipes, ValidationPipe, UseInterceptors, Inject, forwardRef, Patch } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
+import { response } from "express";
+import { request } from "http";
 import { AuthService } from "src/auth/auth.service";
 import { JwtAutGuard } from "src/auth/jwt-auth.guard";
 import { LocalAuthGuard } from "src/auth/local-auth.guard";
 import { Roles } from "src/auth/roles.decorator";
 import { RolesGuard } from "src/auth/roles.guard";
-import { CustomInterceptor } from "src/helper/CustomInterceptor";
 
 import { Role, User } from "./User.schema";
 import { UserService } from "./User.service";
@@ -27,22 +28,6 @@ export class UserController {
   constructor(private readonly UserService: UserService) { }
 
 
-  // @UseGuards(LocalAuthGuard)
-  // @Post('/auth/login')
-  // async login(@Request() req: any) {
-  //   return this.AuthService.login(req.user);
-
-  // }
-
-
-  // @Post('login')
-  // async login(@Res() response, @Body() User: User, @Req() request) {
-
-  //   const user = await this.UserService.login(User.username, User.password);
-  //   return response.status(HttpStatus.FOUND).json({
-  //     user
-  //   });
-  // }
 
 
   @Post('create')
@@ -62,6 +47,19 @@ export class UserController {
   async logout() {
 
   }
+
+
+  @UseGuards(JwtAutGuard)
+  @Put("change")
+  async changepass(@Req() request,@Body() body){
+    const user=await this.UserService.changepassword(request.user.userId,body);
+    return response.json({user})
+    
+
+  }
+
+
+
 
   @Roles(Role.Admin)
   @UseGuards(JwtAutGuard, RolesGuard)
@@ -105,6 +103,9 @@ export class UserController {
     })
   }
 
+
+  @Roles(Role.Admin)
+  @UseGuards(JwtAutGuard, RolesGuard)
   @Delete('/:id')
   async delete(@Res() response, @Param('id') id: string) {
     try {

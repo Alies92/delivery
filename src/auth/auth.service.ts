@@ -11,18 +11,7 @@ export class AuthService {
     async validateUser(email: string, Password: string): Promise<any> {
         try {
             const user = await this.userservice.login(email, Password);
-            // if (!user) {
-            //     throw new HttpException('Wrong credentials provided', HttpStatus.BAD_REQUEST);
-
-            // }
-            // const isPasswordMatching = await bcrypt.compare(
-            //     Password,
-            //     user.password
-            // );
-            // if (!isPasswordMatching) {
-            //     throw new HttpException('Wrong credentials provided', HttpStatus.BAD_REQUEST);
-            // }
-            // user.password = undefined;
+         
             return user;
         } catch (error) {
             console.log(error);
