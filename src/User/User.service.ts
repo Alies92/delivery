@@ -6,6 +6,8 @@ import { Role } from "../User/User.schema"
 
 import { User, UserDocument } from "./User.schema";
 import { log } from "console";
+import { CACHE_MANAGER } from "@nestjs/cache-manager";
+import { Cache } from 'cache-manager';
 const bcrypt = require("bcrypt");
 
 
@@ -22,7 +24,9 @@ class UserDto {
 @Injectable()
 export class UserService {
 
-    constructor(@InjectModel(User.name) private UserModel: Model<UserDocument>) { }
+    constructor(@InjectModel(User.name) private UserModel: Model<UserDocument>,
+        @Inject(CACHE_MANAGER) private cacheService: Cache,
+    ) { }
 
 
 
@@ -77,13 +81,20 @@ export class UserService {
 
     async changepassword(id, body) {
         const user = await this.UserModel.findById(id).exec();
-        const password = await bcrypt.hash(body.password, 10);        
-       user.password = password;
-       await user.save();
+        const password = await bcrypt.hash(body.password, 10);
+        user.password = password;
+        await user.save();
         user.password = undefined;
         user.roles = undefined;
         return user;
-       
+
+    }
+
+
+    async cache(id, data): Promise<any> {
+        await this.cacheService.set(id.toString(), data.code);
+        const cachedData = await this.cacheService.get(id.toString());
+        console.log('data set to cache', cachedData);
     }
 
     async readAll(): Promise<User[]> {

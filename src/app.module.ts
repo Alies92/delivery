@@ -12,6 +12,7 @@ import { UserController } from './User/User.controller';
 import { UserModule } from './User/User.module';
 import { RestaurantModule } from './restaurant/restaurant.module';
 import * as Joi from 'joi';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [UserModule,
@@ -19,7 +20,8 @@ import * as Joi from 'joi';
     ConfigModule.forRoot({
       isGlobal: true
     }),
-    RestaurantModule],
+    RestaurantModule,
+    CacheModule.register({isGlobal:true})],
   controllers: [AppController],
   providers: [AppService],
 })

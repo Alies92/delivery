@@ -10,6 +10,8 @@ import { RolesGuard } from "src/auth/roles.guard";
 
 import { Role, User } from "./User.schema";
 import { UserService } from "./User.service";
+import { CacheInterceptor, CacheTTL } from "@nestjs/cache-manager";
+import { promises } from "dns";
 
 interface updatedUser {
   username?: string,
@@ -51,14 +53,22 @@ export class UserController {
 
   @UseGuards(JwtAutGuard)
   @Put("change")
-  async changepass(@Req() request,@Body() body){
-    const user=await this.UserService.changepassword(request.user.userId,body);
-    return response.json({user})
-    
+  async changepass(@Req() request, @Res() response, @Body() body) {
+    const user = await this.UserService.changepassword(request.user.userId, body);
+    return response.json({ user })
+
 
   }
 
 
+  @UseGuards(JwtAutGuard)
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(120) // override TTL to 120 seconds
+  @Post("cache")
+  async getdata(@Req() request, @Body() body) {
+    await this.UserService.cache(request.user.userId, body);
+
+  }
 
 
   @Roles(Role.Admin)
